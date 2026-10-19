@@ -23,3 +23,8 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
+      - name: Guardar jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: powertrade-jar
+          path: build/libs/*.jar
