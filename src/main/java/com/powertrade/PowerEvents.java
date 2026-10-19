@@ -35,6 +35,10 @@ public class PowerEvents {
     /** Evita recursão quando o próprio dano extra dispara os eventos de dano. */
     private static boolean inExtraDamage = false;
 
+    /** Alvo e dano do último golpe corpo a corpo de um jogador (capturado antes do evento Post). */
+    private static LivingEntity pendingTarget = null;
+    private static float pendingAmount = 0.0f;
+
     // ---------- Jogador entra / renasce ----------
 
     @SubscribeEvent
@@ -67,6 +71,13 @@ public class PowerEvents {
 
     @SubscribeEvent
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+        // Guarda o dano de golpes de jogadores para o dano em área (evento Post).
+        if (!inExtraDamage && event.getSource().getEntity() instanceof ServerPlayer atk
+                && event.getSource().getDirectEntity() == atk) {
+            pendingTarget = event.getEntity();
+            pendingAmount = event.getAmount();
+        }
+
         if (!(event.getEntity() instanceof ServerPlayer victim)) return;
         MinecraftServer server = PowerLogic.server(victim);
         if (server == null) return;
@@ -120,7 +131,8 @@ public class PowerEvents {
             }
             if (areaLvl > 0) {
                 double radius = 2.0 + areaLvl * 0.07;
-                float splash = (float) (event.getNewDamage() * Skill.DANO_AREA.value(areaLvl));
+                float baseDamage = pendingTarget == target ? pendingAmount : 0.0f;
+                float splash = (float) (baseDamage * Skill.DANO_AREA.value(areaLvl));
                 if (splash > 0.0f) {
                     List<LivingEntity> nearby = level.getEntitiesOfClass(LivingEntity.class,
                             target.getBoundingBox().inflate(radius),
@@ -135,6 +147,7 @@ public class PowerEvents {
             }
         } finally {
             inExtraDamage = false;
+            pendingTarget = null;
         }
     }
 
