@@ -1,0 +1,24 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+
+[[mods]]
+modId = "powertrade"
+version = "1.0.0"
+displayName = "Power Trade"
+authors = "Voce"
+description = '''Troque itens por poder numa arvore de habilidades. Quanto mais evolui, mais caro fica.'''
+
+[[dependencies.powertrade]]
+modId = "neoforge"
+type = "required"
+versionRange = "[26.1.2.71,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.powertrade]]
+modId = "minecraft"
+type = "required"
+versionRange = "[26.1,)"
+ordering = "NONE"
+side = "BOTH"
